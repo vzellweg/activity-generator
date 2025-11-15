@@ -1,0 +1,38 @@
+name: Contribution Graph Automation
+
+on:
+  schedule:
+    - cron: "21 20 * * *"  # Daily at 12:00 UTC
+  workflow_dispatch:      # Enables manual trigger button
+
+jobs:
+
+  scheduled-commit:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: bcanseco/github-contribution-graph-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_EMAIL: vazellweg@gmail.com
+          MIN_COMMITS_PER_DAY: 0
+          MAX_COMMITS_PER_DAY: 5
+
+  manual-backfill:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: bcanseco/github-contribution-graph-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_EMAIL: vazellweg@gmail.com
+          MAX_DAYS: 365
+          ORIGIN_TIMESTAMP: 1763182883
+          MIN_COMMITS_PER_DAY: 0
+          MAX_COMMITS_PER_DAY: 5
+          INCLUDE_WEEKENDS: false
+          FORCE_PUSH: false
